@@ -19,10 +19,15 @@
       </div>
       <div class="right" id="photo">
         <div class="right-main">
-          <canvas></canvas>
+          <div class="right-top">
+            <canvas class="canvas"></canvas>
+          </div>
+          <div class="right-down">
+            <div class="dog"></div>
+          </div>
         </div>
       </div>
-    </div>
+      </div>
     <div class="footer" :class="{footer_line: bottom}">
       <div>
         <a class="back-top" @click="backTop()" v-show="backTopShow"></a>
@@ -133,8 +138,24 @@
   }
   .right-main {
     margin: 50px;
+  }
+  .right-top {
     border: 1px solid;
-    height: 100%;
+    height: 200px;
+    margin: 10px;
+    right:35px;
+    top:80px;
+    width:300px;
+    position:fixed;
+  }
+  .right-down {
+    border: 1px solid;
+    height: 200px;
+    margin: 10px;
+    right:35px;
+    top:320px;
+    width:300px;
+    position:fixed;
   }
   .left-header {
     margin: 20px;
