@@ -12,7 +12,7 @@ class Article(MongoDBM):
         cate = {
             'time': time.time(),
             'name': category.get('name', ''),
-            'cid': category.get('cid', '')
+            'mk': category.get('mk', '')
         }
 
         cateId = str(category.get('_id'))

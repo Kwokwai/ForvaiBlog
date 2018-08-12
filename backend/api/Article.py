@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import time
+import time, json
 
 from flask import request
 from core.wrap import Resource as ApiResource
@@ -12,54 +12,42 @@ from models.tag import Tag as TagModel
 
 class Article(ApiResource):
     def get(self):
-        articles = ArticleModel.getAllData()
-        list = []
-        for article in articles:
-            data = {
-                'id': str(article.get('_id', '')),
-                'aid': article.get('aid', ''),
-                'title': article.get('title', ''),
-                'content': article.get('content', ''),
-                'summery': article.get('summery', ''),
-                'createYear': article.get('createDate', '')[:4],
-                'createDate': article.get('createDate', '')[5:10],
-                'updateDate': article.get('updateDate', ''),
-                'category': article.get('category', ''),
-                'tag': article.get('tag', '')
-            }
-            list.append(data)
-        resp = {
-            'list': list
-        }
-        return resp
+        iKwargs = request.data
+        if iKwargs.__getstate__() == {}:
+            allData = self.allData()
+            return allData
+        else:
+            return self.detailData(iKwargs)
 
     def post(self):
-
+        iKwargs = request.form.to_dict()
         data = {
-            'title': request.data['title'],
-            'summery': request.data['summery'],
-            'content': request.data['content'],
+            'title': iKwargs['title'],
+            'summary': iKwargs['summary'],
+            'content': iKwargs['content'],
         }
         # 创建一篇新文章
         newarticle = ArticleModel.create(data)
         # 添加文章目录分类 只能一个目录分类
         article = ArticleModel.mustFindOne(str(newarticle.get('_id')))
-        category = CategoryModel.mustFindOne(request.data['cateid'])
-        category.addArticleModel(article)
-        article.addCategoryModel(category)
+        if 'cateid' in iKwargs:
+            category = CategoryModel.mustFindOne(iKwargs['cateid'])
+            category.addArticleModel(article)
+            article.addCategoryModel(category)
 
         # 添加文章tag属性 可以多个tag属性
-        # tagList = eval(request.data['taglist'])
-        # for tagid in tagList:
-        #     tag = TagModel.mustFindOne(tagid)
-        #     tag.addArticleModel(article)
-        #     article.addTagModel(tag)
+        if 'taglist' in iKwargs:
+            tagList = eval(iKwargs['taglist'])
+            for tagid in tagList:
+                tag = TagModel.mustFindOne(tagid)
+                tag.addArticleModel(article)
+                article.addTagModel(tag)
 
         resp = {
             'id': str(article.get('_id', '')),
-            'aid': str(article.get('aid', '')),
+            'mk': str(article.get('mk', '')),
             'title': article.get('title', ''),
-            'summery': article.get('summery', ''),
+            'summary': article.get('summary', ''),
             'content': article.get('content', ''),
             'category': article.get('category', ''),
             'tag': article.get('tag', ''),
@@ -69,23 +57,31 @@ class Article(ApiResource):
         return resp
 
     def put(self):
+        iKwargs = request.form.to_dict()
         updateDate = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
-        article = ArticleModel.mustFindOne(request.data['id'])
-        article.set('content', request.data['content'])
-        article.set('summery', request.data['summery'])
+        article = ArticleModel.find({'mk':iKwargs['mk']})
+
+        def exit(args):
+            if args in iKwargs:
+                article.set(args, iKwargs[args])
+        exit('content')
+        exit('summary')
+        exit('title')
         article.set('updateDate', updateDate)
         article.save()
         data = {
             'title': article.get('title', ''),
-            'summery': article.get('summery', ''),
+            'summary': article.get('summary', ''),
             'content': article.get('content', ''),
             'updateDate': article.get('updateDate', ''),
-            'createDate': article.get('createDate', '')
+            'createDate': article.get('createDate', ''),
+            'mk': article.get('mk', '')
         }
         return data
 
     def delete(self):
-        article = ArticleModel.mustFindOne(request.data['id'])
+        iKwargs = request.data
+        article = ArticleModel.mustFindOne(iKwargs['id'])
 
         categoryId = article.get('category', '').keys()
         for cateId in categoryId:
@@ -100,20 +96,42 @@ class Article(ApiResource):
         article.delete()
         return {}
 
+    # 查询所有数据
+    def allData(self):
+        articles = ArticleModel.getAllData()
+        list = []
+        for article in articles:
+            data = {
+                'id': str(article.get('_id', '')),
+                'mk': article.get('mk', ''),
+                'title': article.get('title', ''),
+                'content': article.get('content', ''),
+                'summary': article.get('summary', ''),
+                'createYear': article.get('createDate', '')[:4],
+                'createDate': article.get('createDate', '')[5:10],
+                'updateDate': article.get('updateDate', ''),
+                'category': article.get('category', ''),
+                'tag': article.get('tag', '')
+            }
+            list.append(data)
+        resp = {
+            'list': list
+        }
+        return resp
 
-class ArticleDetail(ApiResource):
-    def get(self, id):
-        article = ArticleModel.find({'aid': int(id)})
+    # 查询详情数据
+    def detailData(self, iKwargs):
+        article = ArticleModel.find({'mk': iKwargs['mk']})
         if article.get('updateDate', '') == '':
             updateDate = article.get('createDate', '')[:10]
         else:
             updateDate = article.get('updateDate', '')[:10]
         data = {
             'id': str(article.get('_id', '')),
-            'aid': article.get('aid', ''),
+            'mk': article.get('mk', ''),
             'title': article.get('title', ''),
             'content': article.get('content', ''),
-            'summery': article.get('summery', ''),
+            'summary': article.get('summary', ''),
             'createYear': article.get('createDate', '')[:4],
             'createDate': article.get('createDate', '')[5:10],
             'updateDate': updateDate,
@@ -121,4 +139,6 @@ class ArticleDetail(ApiResource):
             'tag': article.get('tag', '')
         }
         return data
+
+
 

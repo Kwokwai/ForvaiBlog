@@ -8,12 +8,41 @@ from models.tag import Tag as TagModel
 
 class Tag(ApiResource):
     def get(self):
+        iKwargs = request.data
+        if iKwargs.__getstate__() == {}:
+            allData = self.allData()
+            return allData
+        else:
+            return self.detailData(iKwargs)
+
+    def post(self):
+        iKwargs = request.form.to_dict()
+        tag = TagModel()
+        data = {
+            'name': iKwargs['name'],
+            'articleList': {}
+        }
+        tag.create(data)
+        return data
+
+    def delete(self):
+        iKwargs = request.data.to_dict()
+        tag = TagModel.mustFindOne(iKwargs['id'])
+        articlelist = tag.getArticleIDList()
+        for artcleId in articlelist:
+            article = ArticleModel.mustFindOne(artcleId)
+            article.delCategoryModel(tag)
+        tag.delete()
+        return {}
+
+
+    def allData(self):
         tags = TagModel.getAllData()
         list = []
         for tag in tags:
             data = {
                 'id': str(tag.get('_id', '')),
-                'tid': tag.get('tid', ''),
+                'mk': tag.get('mk', ''),
                 'name': tag.get('name', ''),
                 'articleList': tag.get('articleList', ''),
                 'createDate': tag.get('createDate', '')
@@ -24,37 +53,17 @@ class Tag(ApiResource):
         }
         return resp
 
-    def post(self):
-        tag = TagModel()
-        data = {
-            'name': request.data['name'],
-            'articleList': {}
-        }
-        tag.create(data)
-        return data
-
-    def delete(self):
-        tag = TagModel.mustFindOne(request.data['id'])
-        articlelist = tag.getArticleIDList()
-        for artcleId in articlelist:
-            article = ArticleModel.mustFindOne(artcleId)
-            article.delCategoryModel(tag)
-        tag.delete()
-        return {}
-
-
-class TagDetail(ApiResource):
-    def get(self, id):
-        tag = TagModel.find({'tid': int(id)})
+    def detailData(self, iKwargs):
+        tag = TagModel.find({'mk': iKwargs['mk']})
         articlelist = tag.getArticleIDList()
         allList = []
         for articleId in articlelist:
             article = ArticleModel.mustFindOne(articleId)
             articledata = {
                 'id': str(article.get('_id', '')),
-                'aid': article.get('aid', ''),
+                'mk': article.get('mk', ''),
                 'title': article.get('title', ''),
-                'summery': article.get('summery', ''),
+                'summary': article.get('summary', ''),
                 'createYear': article.get('createDate', '')[:4],
                 'createDate': article.get('createDate', '')[5:10],
                 'updateDate': article.get('updateDate', ''),

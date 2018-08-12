@@ -26,7 +26,6 @@ class Resource(BaseResource, metaclass=ResourceType):
                 rsp = v.dispatch_request(*args, **kwargs)
                 if isinstance(rsp, BaseResponse):
                     return rsp
-
                 rsp['code'] = 0
                 return rsp
             except APIException as e:
@@ -100,4 +99,5 @@ class Request(BaseRequest):
             return self.form
         if self.args:
             return self.args
+        print(23423562356235)
         return JsonDict({})

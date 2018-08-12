@@ -19,3 +19,10 @@ class ModelNotFind(APIException):
 
     def __init__(self, query):
         self.msg = u"%s 找不到该数据" % repr(query)
+
+
+class ModelRepeat(APIException):
+    code = 600
+
+    def __init__(self, query):
+        self.msg = u"%s 已存在" % repr(query)

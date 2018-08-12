@@ -87,7 +87,6 @@ class MongoDBM(object, metaclass=MongoMeta):
     def create(cls, data=None):
         if data is None:
             data = {}
-        data['time'] = time.time()
         data['createDate'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         data['mk'] = str(time.time()).split('.')[0]
         rv = cls.db[cls.collection].insert_one(data)
