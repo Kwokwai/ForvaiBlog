@@ -42,19 +42,18 @@ class Article(ApiResource):
         }
         # 创建一篇新文章
         newarticle = ArticleModel.create(data)
-
         # 添加文章目录分类 只能一个目录分类
-        article = ArticleModel.mustFindOne(newarticle.get('_id'))
+        article = ArticleModel.mustFindOne(str(newarticle.get('_id')))
         category = CategoryModel.mustFindOne(request.data['cateid'])
         category.addArticleModel(article)
         article.addCategoryModel(category)
 
         # 添加文章tag属性 可以多个tag属性
-        tagList = eval(request.data['taglist'])
-        for tagid in tagList:
-            tag = TagModel.mustFindOne(tagid)
-            tag.addArticleModel(article)
-            article.addTagModel(tag)
+        # tagList = eval(request.data['taglist'])
+        # for tagid in tagList:
+        #     tag = TagModel.mustFindOne(tagid)
+        #     tag.addArticleModel(article)
+        #     article.addTagModel(tag)
 
         resp = {
             'id': str(article.get('_id', '')),

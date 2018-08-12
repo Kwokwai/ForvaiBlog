@@ -6,16 +6,6 @@ from core.orm import MongoDBM
 
 class Tag(MongoDBM):
 
-    @classmethod
-    def create(cls, data=None):
-        if data is None:
-            data = {}
-        tid = cls.getDataNum() + 1
-        data['tid'] = tid
-        data['time'] = time.time()
-        data['createDate'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        return super(Tag, cls).create(data)
-
     def addArticleModel(self, article):
         articleData = self.get('articleList')
         articleMember = {

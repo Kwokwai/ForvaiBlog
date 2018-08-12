@@ -4,16 +4,6 @@ from core.orm import MongoDBM
 
 class Article(MongoDBM):
 
-    @classmethod
-    def create(cls, data=None):
-        if data is None:
-            data = {}
-        aid = cls.getDataNum() + 1
-        data['aid'] = aid
-        data['time'] = time.time()
-        data['createDate'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        return super(Article, cls).create(data)
-
     @property
     def articleid(self):
         return str(self.data['_id'])
@@ -50,7 +40,7 @@ class Article(MongoDBM):
         tagMember = {
             'time': time.time(),
             'createDate': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),
-            'tid': tag.get('tid', ''),
+            'mk': tag.get('mk', ''),
             'name': tag.get('name', ''),
         }
         if tagData:
