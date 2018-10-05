@@ -7,6 +7,7 @@ from werkzeug.wrappers import Response as BaseResponse
 from werkzeug.utils import cached_property
 
 from core.exceptions import APIException
+from core.logger import VaiLogs
 
 
 class ResourceType(MethodViewType):
@@ -99,5 +100,4 @@ class Request(BaseRequest):
             return self.form
         if self.args:
             return self.args
-        print(23423562356235)
         return JsonDict({})

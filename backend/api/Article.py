@@ -4,6 +4,7 @@ import time, json
 
 from flask import request
 from core.wrap import Resource as ApiResource
+from core.logger import VaiLogs
 
 from models.article import Article as ArticleModel
 from models.category import Category as CategoryModel
@@ -21,13 +22,9 @@ class Article(ApiResource):
 
     def post(self):
         iKwargs = request.form.to_dict()
-        data = {
-            'title': iKwargs['title'],
-            'summary': iKwargs['summary'],
-            'content': iKwargs['content'],
-        }
+        VaiLogs.info(iKwargs)
         # 创建一篇新文章
-        newarticle = ArticleModel.create(data)
+        newarticle = ArticleModel.create(iKwargs)
         # 添加文章目录分类 只能一个目录分类
         article = ArticleModel.mustFindOne(str(newarticle.get('_id')))
         if 'cateid' in iKwargs:
