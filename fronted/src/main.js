@@ -3,13 +3,23 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import api from './api/index'
+import VueMarkdown from 'vue-markdown'
 
 Vue.config.productionTip = false
+Vue.prototype.$api = api
 
+// 加载新页面到顶部
+router.afterEach((to, from, next) => {
+  window.scrollTo(0, 0)
+})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: { 
+  	App,
+  	VueMarkdown
+  },
   template: '<App/>'
 })

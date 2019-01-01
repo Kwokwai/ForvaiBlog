@@ -2,15 +2,10 @@
 
 from flask import Flask
 from flask_cors import *
-from api.Article import Article
-from api.Category import Category
-from api.Tag import Tag
-from api.Archive import Archive
 from core.wrap import Request, Resource
-from core.logger import VaiLogs
 from gevent.pywsgi import WSGIServer
 
-import api as apis
+import api.blog as apis
 import conf
 import inspect
 import os
@@ -25,11 +20,6 @@ app.config['DEBUG'] = True
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.request_class = Request
-
-# api.add_resource(Archive, '/archive')
-# api.add_resource(Article, '/article')
-# api.add_resource(Category, '/category')
-# api.add_resource(Tag, '/tag')
 
 
 

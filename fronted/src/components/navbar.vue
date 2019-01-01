@@ -13,6 +13,7 @@
                 <!--</li>-->
               </ul>
             </li>
+            <li class="menu-item"><router-link to="/todo"><i class="fa fa-comment"></i>Todo</router-link></li>
             <li class="menu-item"><router-link to="/history"><i class="fa fa-comment"></i>历史</router-link></li>
             <li class="menu-item"><router-link to="/about"><i class="fa fa-user"></i>关于</router-link></li>
           </ul>
@@ -89,7 +90,7 @@ export default {
       max-width: 100%!important;
     }
     .container.full {
-      max-width: 100%!important;
+      max-width: 90%!important;
     }
     .back-to-top {
       display: none;

@@ -4,18 +4,12 @@
     <div class="headpic">
       <div class="container headtitle">
         <div class="title">
-          <router-link to="about"><h1>怜也</h1></router-link>
+          <router-link to="about"></router-link>
         </div>
       </div>
     </div>
     <div class="content">
       <div class="content-list">
-        <articles></articles>
-        <articles></articles>
-        <articles></articles>
-        <articles></articles>
-        <articles></articles>
-        <articles></articles>
         <articles></articles>
       </div>
     </div>
@@ -40,7 +34,7 @@ export default {
 
 <style lang="scss">
   .headpic {
-    height: 280px;
+    height: 160px;
     background: url(/static/head.jpg) center -52px no-repeat;
     -webkit-background-size: cover;
     background-size: cover;
@@ -48,7 +42,7 @@ export default {
   }
 
   .headtitle {
-     top: 100px;
+     top: 60px;
      max-width: 1100px;
      margin: 0 auto;
      padding: 0 50px;

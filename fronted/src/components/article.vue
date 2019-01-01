@@ -4,12 +4,13 @@
       <h2>{{item.title}}</h2>
       <p class="article-meta">发布于 {{item.createDate}}</p>
       <div class="ui ribbon label red">
-        <a href="">{{item.tag}}</a>
+        <router-link :to="{path:'/category', query:{mk:item.category.mk}}">{{item.category.name}}</router-link>
       </div>
-      <div class="abstract" v-html="item.content.html">
+      <div class="abstract" v-html="item.summary">
       </div>
-      <p class="more"><router-link :to="{ path:'/article', query:{articleId:item.articleId}}">阅读全文</router-link></p>
+      <p class="more"><router-link :to="{ path:'/article', query:{mk:item.mk}}">阅读全文</router-link></p>
     </article>
+    <!--<page total="total" :current-page='current' @pagechange="pagechange"></page>-->
     <div class="pages">
       <a href="javascript:;" @click="go(page-=1)" style="float: left;">上一页</a>
       <a href="javascript:;" @click="go(page+=1)" style="float: right;">下一页</a>
@@ -18,13 +19,18 @@
 </template>
 
 <script>
+import page from './page'
 // import axios from 'axios'
 export default {
+  components: {
+    page
+  },
   props: [
     'tagSelect'
   ],
   data () {
     return {
+      total: 10,
       list: [],
       page: 1,
       pageSize: 10,
@@ -40,26 +46,40 @@ export default {
     this.getlist()
   },
   methods: {
-    // getlist () {
-    //   var param = {
-    //     page: this.page,
-    //     pageSize: this.pageSize
-    //   }
-    //   axios.get('/api/articleList', {
-    //     params: param
-    //   }).then((result) => {
-    //     let res = result.data
-    //     if (res.status == '0') {
-    //       if (res.result.count == 0) {
-    //         this.page -= 1
-    //       } else {
-    //         this.list = res.result.list
-    //       }
-    //     } else {
-    //       this.list = []
-    //     }
-    //   })
-    // },
+    getlist () {
+      // var param = {
+      //   page: this.page,
+      //   pageSize: this.pageSize
+      // }
+      this.$api.get('/article', null, response => {
+        console.log(response)
+        if (response.status === 200) {
+          console.log(this.page)
+          if (response.data.list.length === 0) {
+            this.page -= 1
+            console.log(this.page)
+          } else {
+            this.list = response.data.list
+          }
+        } else {
+          this.list = []
+        }
+      })
+      // axios.get('/api/articleList', {
+      //   params: param
+      // }).then((result) => {
+      //   let res = result.data
+      //   if (res.status == '0') {
+      //     if (res.result.count == 0) {
+      //       this.page -= 1
+      //     } else {
+      //       this.list = res.result.list
+      //     }
+      //   } else {
+      //     this.list = []
+      //   }
+      // })
+    },
     // getTagList () {
     //   var param = {
     //     page: this.page,
@@ -95,6 +115,7 @@ export default {
 <style media="screen" lang="scss">
   .article-list {
     padding: 20px;
+    opacity:0.5;
     background: #fff;
     border-radius: 10px;
     /*box-shadow: 1px 1px 2px rgba(0,0,0,0.08)*/

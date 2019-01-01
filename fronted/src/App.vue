@@ -23,7 +23,10 @@ export default {
   }
   body {
     min-height: 1600px;
-    background: url(/static/bingguo.jpg);
-    background-attachment:fixed;
+    background-image: url(/static/back.png);
+    background-position: left top;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 </style>
