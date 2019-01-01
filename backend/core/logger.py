@@ -22,7 +22,6 @@ class VaiLogs:
     @classmethod
     def logBack(cls, type, value, trace):
         print(trace, value, type)
-        # print 'vic Unhandled Error: %s: %s'%(str(type), str(value))
         VaiLogs.error(value)
         sys.__excepthook__(type, value, trace)
 

@@ -3,10 +3,14 @@
 from flask import request
 from models.article import Article as ArticleModel
 from core.wrap import Resource as ApiResource
+from core.logger import VaiLogs
+
 from models.tag import Tag as TagModel
 
 
 class Tag(ApiResource):
+    __mount__ = '/tag'
+
     def get(self):
         iKwargs = request.data
         if iKwargs.__getstate__() == {}:
@@ -18,15 +22,16 @@ class Tag(ApiResource):
     def post(self):
         iKwargs = request.form.to_dict()
         tag = TagModel()
-        data = {
-            'name': iKwargs['name'],
-            'articleList': {}
-        }
-        tag.create(data)
-        return data
+        # data = {
+        #     'name': iKwargs['name'],
+        #     'articleList': {}
+        # }
+        iKwargs["articleList"] = {}
+        tag.create(iKwargs)
+        return {}
 
     def delete(self):
-        iKwargs = request.data.to_dict()
+        iKwargs = request.data
         tag = TagModel.mustFindOne(iKwargs['id'])
         articlelist = tag.getArticleIDList()
         for artcleId in articlelist:

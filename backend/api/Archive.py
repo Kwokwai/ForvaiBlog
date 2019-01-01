@@ -5,6 +5,8 @@ from core.wrap import Resource as ApiResource
 
 
 class Archive(ApiResource):
+    __mount__ = '/archive'
+
     def get(self):
         articles = ArticleModel.getAllData()
         archive = []

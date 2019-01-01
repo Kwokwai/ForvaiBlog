@@ -10,6 +10,7 @@ from models.category import Category as CategoryModel
 
 
 class Category(ApiResource):
+    __mount__ = 'category'
 
     def get(self):
         iKwargs = request.data
@@ -36,7 +37,8 @@ class Category(ApiResource):
 
     def delete(self):
         iKwargs = request.data.to_dict()
-        category = CategoryModel.find({'mk':iKwargs['mk']})
+        # category = CategoryModel.find({'mk':iKwargs['mk']})
+        category = CategoryModel.mustFindOne(iKwargs["id"])
         articlelist = category.getArticleIDList()
         for artcleId in articlelist:
             article = ArticleModel.mustFindOne(artcleId)

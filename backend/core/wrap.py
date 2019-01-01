@@ -1,14 +1,17 @@
-from flask import request
+from flask import request, make_response
 from flask.views import MethodViewType
 from flask.wrappers import Request as BaseRequest
 from flask_restful import Resource as BaseResource
+from flask_restful import Api as BaseApi
 from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.wrappers import Response as BaseResponse
 from werkzeug.utils import cached_property
+from collections import OrderedDict
 
 from core.exceptions import APIException
 from core.logger import VaiLogs
 
+import json
 
 class ResourceType(MethodViewType):
     def __new__(cls, name, bases, attrs):
@@ -53,9 +56,10 @@ class Resource(BaseResource, metaclass=ResourceType):
         return view
 
     def dispatch_request(self, *args, **kwargs):
+        VaiLogs.info(request.method+" "+request.base_url)
         # custom return options request
         if request.method == 'OPTIONS':
-            return None
+            return {"status": 200}
 
         meth = getattr(self, request.method.lower(), None)
         if meth is None and request.method == 'HEAD':
@@ -101,3 +105,35 @@ class Request(BaseRequest):
         if self.args:
             return self.args
         return JsonDict({})
+
+
+
+def custom_output_json(data, code, headers=None):
+    dumped = json.dumps(data) + "\n"
+    resp = make_response(dumped, code)
+    resp.headers.extend(headers or {})
+    return resp
+
+
+class Api(BaseApi):
+    """
+    customer flask-restful api object
+    """
+
+    def __init__(self, prefix=None):
+        super(Api, self).__init__()
+        self.prefix = prefix
+        self.representations = OrderedDict([
+            ('application/json', custom_output_json)
+        ])
+
+    def _init_app(self, app):
+        """
+        wrap the flask-RESTful Api class to avoid deep error handle stack
+        """
+        # app.handle_exception = partial(self.error_router, app.handle_exception)
+        # app.handle_user_exception = partial(self.error_router, app.handle_user_exception)
+
+
+        for resource, urls, kwargs in self.resources:
+            self._register_view(app, resource, *urls, **kwargs)

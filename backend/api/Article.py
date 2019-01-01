@@ -12,6 +12,8 @@ from models.tag import Tag as TagModel
 
 
 class Article(ApiResource):
+    __mount__ = '/article'
+
     def get(self):
         iKwargs = request.data
         if iKwargs.__getstate__() == {}:
@@ -27,10 +29,18 @@ class Article(ApiResource):
         newarticle = ArticleModel.create(iKwargs)
         # 添加文章目录分类 只能一个目录分类
         article = ArticleModel.mustFindOne(str(newarticle.get('_id')))
-        if 'cateid' in iKwargs:
-            category = CategoryModel.mustFindOne(iKwargs['cateid'])
+        if 'category' in iKwargs:
+            category = CategoryModel.find({'name': iKwargs["category"]})
+        # if 'cateid' in iKwargs:
+        #     category = CategoryModel.mustFindOne(iKwargs['cateid'])
             category.addArticleModel(article)
-            article.addCategoryModel(category)
+            VaiLogs.info(category)
+            cate = {
+                "mk": category.get("mk", ""),
+                "name": category.get("name", "")
+            }
+            article.set('category', cate)
+            article.save()
 
         # 添加文章tag属性 可以多个tag属性
         if 'taglist' in iKwargs:
@@ -105,7 +115,8 @@ class Article(ApiResource):
                 'content': article.get('content', ''),
                 'summary': article.get('summary', ''),
                 'createYear': article.get('createDate', '')[:4],
-                'createDate': article.get('createDate', '')[5:10],
+                'createDay': article.get('createDate', '')[5:10],
+                'createDate': article.get('createDate', ''),
                 'updateDate': article.get('updateDate', ''),
                 'category': article.get('category', ''),
                 'tag': article.get('tag', '')
@@ -130,7 +141,8 @@ class Article(ApiResource):
             'content': article.get('content', ''),
             'summary': article.get('summary', ''),
             'createYear': article.get('createDate', '')[:4],
-            'createDate': article.get('createDate', '')[5:10],
+            'createDay': article.get('createDate', '')[5:10],
+            'createDate': article.get('createDate', ''),
             'updateDate': updateDate,
             'category': article.get('category', ''),
             'tag': article.get('tag', '')
